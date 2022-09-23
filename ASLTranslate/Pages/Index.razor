@@ -1,0 +1,85 @@
+﻿@page "/"
+@namespace System.Web.UI.Control
+
+<PageTitle>Index</PageTitle>
+
+<div class="text-center">
+
+	<h1>English to ASL Translator & Avatar</h1>
+
+	<p>Welcome to our AI driven ASL avatars app.</p>
+
+	<div class="english-input">
+		<p style="padding-top:4%; font-weight:bold">Input your English Sentence:</p>
+
+		<input class="border-4 w-1/3 rounded m-6 p-6 h-8
+			border-blue-300" @bind-value="SearchText"
+			@bind-value:event="oninput" placeholder="Input Text" />
+
+
+		<button class="border-4 w-1/3 rounded m-6 p-6 h-8
+			border-blue-300" style="background-color: #7c84eb" @onclick="Translate">
+			Translate
+		</button>
+	</div>
+
+	<div class ="asl-output">
+		<p style="padding-top:4%; font-weight:bold">ASL Grammatical Translation:</p>
+
+		<p>@TranslatedText</p>
+
+		<button class="border-4 w-1/3 rounded m-6 p-6 h-8
+			border-blue-300" style="background-color: #7c84eb" @onclick="Avatar">
+			Generate ASL Avatar
+		</button>
+
+	</div>
+
+	<div class="avatar-video">
+
+		<p style="padding-top:4%; font-weight:bold">AI Driven ASL Avatar:</p>
+
+		@*Replace the src with the avatar generated video. Can also use the Blazor-Video version
+
+		use this link for BlazoredVideo Implementation - mine was being iffy so https://github.com/Blazored/Video
+		*@
+		
+		<iframe id="avatarVideo"
+				width="560"
+				height="315"
+				src="https://www.youtube.com/embed/1TCX_Aqzoo4"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				allowfullscreen>
+		</iframe>
+
+		@*<BlazoredVideo PlayEvent="OnPlay"
+					   class="w-100"
+					   style="max-width:800px;"
+					   controls="controls">
+			<source src="https://www.youtube.com/embed/1TCX_Aqzoo4" type="video/mp4" />
+		</BlazoredVideo>*@
+
+
+	</div>
+
+
+	@code {
+		public string SearchText = "";
+		public string TranslatedText = "";
+		public string AvatarSrc = "";
+
+		private void Translate()
+		{
+			//send the text input to be translated probably here and save into TranslatedText
+			TranslatedText = "translated text placeholder!";
+		}
+
+		private void Avatar()
+		{
+			//call the generated avatar based on "TranslatedText" and replace the src
+			AvatarSrc = "https://www.youtube.com/embed/1TCX_Aqzoo4";
+		}
+
+	}
+
+</div>

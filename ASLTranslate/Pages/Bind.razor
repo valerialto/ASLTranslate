@@ -1,0 +1,16 @@
+﻿@*@page "/bind"*@
+
+@page "/bind-event"
+
+<p>
+    <input @bind="InputValue" @bind:event="oninput" />
+</p>
+
+<p>
+    <code>InputValue</code>: @InputValue
+</p>
+
+@code {
+    private string InputValue { get; set; }
+}
+
