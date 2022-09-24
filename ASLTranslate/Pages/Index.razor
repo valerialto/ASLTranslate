@@ -1,5 +1,8 @@
 ﻿@page "/"
 @namespace System.Web.UI.Control
+@using ASLTranslate.Translator
+@using Blazored.Video
+@using Blazored.Video.Support
 
 <PageTitle>Index</PageTitle>
 
@@ -26,12 +29,7 @@
 	<div class ="asl-output">
 		<p style="padding-top:4%; font-weight:bold">ASL Grammatical Translation:</p>
 
-		<p>@TranslatedText</p>
-
-		<button class="border-4 w-1/3 rounded m-6 p-6 h-8
-			border-blue-300" style="background-color: #7c84eb" @onclick="Avatar">
-			Generate ASL Avatar
-		</button>
+		<p>@TranslatedString</p>
 
 	</div>
 
@@ -44,20 +42,23 @@
 		use this link for BlazoredVideo Implementation - mine was being iffy so https://github.com/Blazored/Video
 		*@
 		
-		<iframe id="avatarVideo"
+		@*<iframe id="avatarVideo"
 				width="560"
 				height="315"
-				src="https://www.youtube.com/embed/1TCX_Aqzoo4"
+				src=@AvatarSrc
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 				allowfullscreen>
-		</iframe>
+		</iframe>*@
 
-		@*<BlazoredVideo PlayEvent="OnPlay"
-					   class="w-100"
-					   style="max-width:800px;"
-					   controls="controls">
-			<source src="https://www.youtube.com/embed/1TCX_Aqzoo4" type="video/mp4" />
-		</BlazoredVideo>*@
+		<BlazoredVideo
+				EndedEvent="NextVideo"
+				VideoEventOptions="options"
+				autoplay
+				class="w-100"
+				style="max-width:800px;"
+				controls="controls">
+			<source src=@AvatarSrc type="video/mp4" />
+		</BlazoredVideo>
 
 
 	</div>
@@ -65,21 +66,61 @@
 
 	@code {
 		public string SearchText = "";
-		public string TranslatedText = "";
-		public string AvatarSrc = "";
+		public string TranslatedString = "";
+		public List<string> TranslatedText = new List<string>();
+		public int index = 0;
+		public string AvatarSrc = "https://www.signingsavvy.com/media2/mp4-ld/30/30871.mp4";
+		Dictionary<VideoEvents, VideoStateOptions> options = new Dictionary<VideoEvents, VideoStateOptions>();
 
 		private void Translate()
 		{
 			//send the text input to be translated probably here and save into TranslatedText
-			TranslatedText = "translated text placeholder!";
+			TranslatedText = Translator.Translate(SearchText);
+			TranslatedString = "";
+			foreach (string s in TranslatedText) TranslatedString += s + " ";
+			index = 0;
+			AvatarSrc = VideoMapping.Videos[TranslatedText[index]];
+			StateHasChanged();
 		}
 
-		private void Avatar()
+		private void NextVideo(VideoState state)
 		{
-			//call the generated avatar based on "TranslatedText" and replace the src
-			AvatarSrc = "https://www.youtube.com/embed/1TCX_Aqzoo4";
+			if (index < TranslatedText.Count)
+			{
+				index++;
+				AvatarSrc = VideoMapping.Videos[TranslatedText[index]];
+			}
+			else AvatarSrc = "";
+
+			StateHasChanged();
 		}
 
+		protected override void OnInitialized()
+		{
+			var option = new VideoStateOptions() { All = true };
+			options[VideoEvents.Abort] = option;
+			options[VideoEvents.CanPlay] = option;
+			options[VideoEvents.CanPlayThrough] = option;
+			options[VideoEvents.DurationChange] = option;
+			options[VideoEvents.Emptied] = option;
+			options[VideoEvents.Ended] = option;
+			options[VideoEvents.Error] = option;
+			options[VideoEvents.LoadedData] = option;
+			options[VideoEvents.LoadedMetadata] = option;
+			options[VideoEvents.LoadStart] = option;
+			options[VideoEvents.Pause] = option;
+			options[VideoEvents.Play] = option;
+			options[VideoEvents.Playing] = option;
+			options[VideoEvents.Progress] = option;
+			options[VideoEvents.RateChange] = option;
+			options[VideoEvents.Seeked] = option;
+			options[VideoEvents.Seeking] = option;
+			options[VideoEvents.Stalled] = option;
+			options[VideoEvents.Suspend] = option;
+			options[VideoEvents.TimeUpdate] = option;
+			options[VideoEvents.VolumeChange] = option;
+			options[VideoEvents.Waiting] = option;
+		}
 	}
 
 </div>
