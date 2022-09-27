@@ -3,6 +3,7 @@
 @using ASLTranslate.Translator
 @using Blazored.Video
 @using Blazored.Video.Support
+@inject IJSRuntime JS
 
 <PageTitle>Index</PageTitle>
 
@@ -53,6 +54,7 @@
 		<BlazoredVideo
 				EndedEvent="NextVideo"
 				VideoEventOptions="options"
+				id="avatar-video"
 				autoplay
 				class="w-100"
 				style="max-width:800px;"
@@ -63,16 +65,15 @@
 
 	</div>
 
-
 	@code {
 		public string SearchText = "";
 		public string TranslatedString = "";
 		public List<string> TranslatedText = new List<string>();
 		public int index = 0;
-		public string AvatarSrc = "https://www.signingsavvy.com/media2/mp4-ld/30/30871.mp4";
+		public string AvatarSrc = "";
 		Dictionary<VideoEvents, VideoStateOptions> options = new Dictionary<VideoEvents, VideoStateOptions>();
 
-		private void Translate()
+		private async Task Translate()
 		{
 			//send the text input to be translated probably here and save into TranslatedText
 			TranslatedText = Translator.Translate(SearchText);
@@ -80,10 +81,11 @@
 			foreach (string s in TranslatedText) TranslatedString += s + " ";
 			index = 0;
 			AvatarSrc = VideoMapping.Videos[TranslatedText[index]];
-			StateHasChanged();
+			var module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/reload.js");
+			await module.InvokeAsync<string>("ReloadVideo");
 		}
 
-		private void NextVideo(VideoState state)
+		private async Task NextVideo(VideoState state)
 		{
 			if (index < TranslatedText.Count)
 			{
@@ -92,7 +94,8 @@
 			}
 			else AvatarSrc = "";
 
-			StateHasChanged();
+			var module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/reload.js");
+			await module.InvokeAsync<string>("ReloadVideo");
 		}
 
 		protected override void OnInitialized()
